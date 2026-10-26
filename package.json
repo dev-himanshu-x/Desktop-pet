@@ -1,6 +1,6 @@
 {
   "name": "desktop-pet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A small animated pet that roams your desktop, always on top of every window.",
   "main": "src/main/main.js",
   "author": "Himanshu",
@@ -38,13 +38,15 @@
         "dmg",
         "zip"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "artifactName": "desktop-pet-mac-${arch}.${ext}"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "artifactName": "desktop-pet-windows.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -59,7 +61,8 @@
       ],
       "icon": "build/icons",
       "category": "Utility",
-      "maintainer": "Himanshu <sanghikartik2976@gmail.com>"
+      "maintainer": "Himanshu <sanghikartik2976@gmail.com>",
+      "artifactName": "desktop-pet-linux.${ext}"
     },
     "publish": {
       "provider": "github"
