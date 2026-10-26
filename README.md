@@ -3,7 +3,19 @@
 A small animated cat that roams your desktop, always on top of every window.
 Control it from the tray/menu-bar icon (change cat colour, hide/show, autostart).
 
-## Install
+## Install (one command)
+
+**macOS / Linux**
+```
+curl -fsSL https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/install.sh | sh
+```
+
+**Windows** (PowerShell)
+```
+irm https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/install.ps1 | iex
+```
+
+## Install (manual download)
 
 Download the file for your OS from the [Releases](../../releases) page:
 
