@@ -65,7 +65,8 @@
       "artifactName": "desktop-pet-linux.${ext}"
     },
     "publish": {
-      "provider": "github"
+      "provider": "github",
+      "releaseType": "release"
     }
   },
   "allowScripts": {
