@@ -3,6 +3,12 @@
 A small animated cat that roams your desktop, always on top of every window.
 Control it from the tray/menu-bar icon (change cat colour, hide/show, autostart).
 
+![The cat in different poses](docs/poses.png)
+
+### Pick your colour
+
+![Available cat colours](docs/colors.png)
+
 ## Install (one command)
 
 **macOS / Linux**
