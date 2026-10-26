@@ -46,7 +46,7 @@
   };
 
   // px/sec, X axis only — states not listed here are stationary.
-  const SPEED = { idle: 0, walk: 50, run: 120 };
+  const SPEED = { idle: 0, walk: 50, run: 80 };
 
   const JUMP_RANGE_X = 73; // max horizontal distance covered by a single hop
   const JUMP_RANGE_Y = 50; // max vertical distance covered by a single hop
@@ -112,7 +112,8 @@
   const BOB_AMPLITUDE = 3; // px
   const TILT_DEG = 1.5; // alternating body sway per stride
   const SQUASH_AMOUNT = 0.01; // scaleY compression per half-stride
-  const WALK_EASE_MS = 250; // time to reach full walking speed
+  const WALK_BRAKE_PX = 40; // distance over which walking slows to a stop
+  const WALK_EASE_MS = 600; // time to reach full walking speed
   const STRIDE_PX_PER_FRAME = 9; // px travelled per leg pose
   const BOB_STRIDE = 18; // px of travel per half bob-cycle
 
@@ -234,7 +235,11 @@
           this.direction = this.walkTargetX >= this.x ? 1 : -1;
           const remaining = this.walkTargetX - this.x;
 
-          this.walkSpeedScale = Math.min(1, this.walkSpeedScale + dt / WALK_EASE_MS);
+          // Ease in from standstill and ease out as the destination nears, so
+          // the cat never lurches to full speed or halts dead.
+          const easeIn = Math.min(1, this.walkSpeedScale + dt / WALK_EASE_MS);
+          const easeOut = Math.max(0.2, Math.min(1, Math.abs(remaining) / WALK_BRAKE_PX));
+          this.walkSpeedScale = Math.min(easeIn, easeOut);
           const step = this.direction * speed * this.walkSpeedScale * (dt / 1000);
           if (Math.abs(step) >= Math.abs(remaining)) {
             // Arrived — stop exactly there and let the normal duration-based
