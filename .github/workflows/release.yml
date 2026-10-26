@@ -12,7 +12,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - os: macos-latest
+            args: --mac --x64 --arm64
+          - os: windows-latest
+            args: --win --x64
+          - os: ubuntu-latest
+            args: --linux --x64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +27,7 @@ jobs:
           node-version: 20
       - run: npm ci
       - name: Build and publish
-        run: npx electron-builder --publish always
+        run: npx electron-builder ${{ matrix.args }} --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
