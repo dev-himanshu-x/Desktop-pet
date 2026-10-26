@@ -73,7 +73,14 @@ function setVisibility(visible) {
   if (petWindow) petWindow.webContents.send('pet:set-visibility', visible);
 }
 
+// Only one pet per user: a second launch (Spotlight, login item, installer)
+// would otherwise spawn another window and tray icon.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+}
+
 app.whenReady().then(() => {
+  if (!app.hasSingleInstanceLock()) return;
   if (process.platform === 'darwin' && app.dock) {
     app.dock.hide();
   }
