@@ -1,0 +1,71 @@
+{
+  "name": "desktop-pet",
+  "version": "1.0.0",
+  "description": "A small animated pet that roams your desktop, always on top of every window.",
+  "main": "src/main/main.js",
+  "author": "Himanshu",
+  "homepage": "https://github.com/himanshu/desktop-pet",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac --x64 --arm64",
+    "build:win": "electron-builder --win --x64",
+    "build:linux": "electron-builder --linux --x64",
+    "build:all": "electron-builder -mwl"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  },
+  "build": {
+    "appId": "com.himanshu.desktoppet",
+    "productName": "Desktop Pet",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "build/icons",
+      "category": "Utility",
+      "maintainer": "Himanshu <sanghikartik2976@gmail.com>"
+    },
+    "publish": {
+      "provider": "github"
+    }
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}

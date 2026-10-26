@@ -1,0 +1,35 @@
+{
+  "frameWidth": 98,
+  "frameHeight": 95,
+  "states": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "sit",
+    "sleep",
+    "stretch",
+    "groom",
+    "scratch",
+    "play",
+    "angry",
+    "beg",
+    "dizzy"
+  ],
+  "framesPerState": {
+    "idle": 4,
+    "walk": 1,
+    "run": 1,
+    "jump": 2,
+    "sit": 3,
+    "sleep": 1,
+    "stretch": 2,
+    "groom": 1,
+    "scratch": 1,
+    "play": 1,
+    "angry": 1,
+    "beg": 1,
+    "dizzy": 1
+  },
+  "columns": 4
+}
