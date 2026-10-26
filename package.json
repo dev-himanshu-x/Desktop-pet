@@ -4,7 +4,7 @@
   "description": "A small animated pet that roams your desktop, always on top of every window.",
   "main": "src/main/main.js",
   "author": "Himanshu",
-  "homepage": "https://github.com/himanshu/desktop-pet",
+  "homepage": "https://github.com/dev-himanshu-x/Desktop-pet",
   "license": "MIT",
   "private": true,
   "scripts": {
