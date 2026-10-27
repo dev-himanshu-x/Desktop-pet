@@ -89,6 +89,20 @@
   const ROAM_GROUND_SNAP_CHANCE = 0.15;
   const ROAM_GROUND_RETURN_CHANCE = 0.15;
 
+  // Cursor chase: when the (moving) cursor comes near the cat it drops what
+  // it's doing and runs after it, hopping up/down when the cursor is at a
+  // different height, then pounces ('play') once it catches up. The forwarded
+  // mousemove events only fire while the cursor moves, so a cursor that stops
+  // for CHASE_IDLE_MS is forgotten and the cat goes back to normal behavior.
+  const CHASE_ENTER_RADIUS = 70; // px from cat centre — cursor must touch the cat's body to start a chase
+  const CHASE_MIN_MS = 800; // chase at least this long before a catch can end it
+  const CHASE_LEAVE_RADIUS = 450; // hysteresis: give up only beyond this
+  const CHASE_IDLE_MS = 2500;
+  const CHASE_SPEED = 150; // px/sec, faster than a normal run
+  const CHASE_CATCH_X = 30; // px horizontal gap that counts as caught
+  const CHASE_HOP_DY = 50; // vertical gap beyond which the cat hops instead of running
+  const CHASE_COOLDOWN_MS = 2000; // pause after a catch before chasing again
+
   function randomBetween([min, max]) {
     return min + Math.random() * (max - min);
   }
@@ -165,9 +179,22 @@
       this.frameElapsed = 0;
       this.paused = false;
 
+      this.cursorX = 0;
+      this.cursorY = 0;
+      this.cursorIdle = Infinity; // ms since the cursor last moved
+      this.chasing = false;
+      this.chaseCooldown = 0;
+      this.chaseTime = 0;
+
       this.inRoamBurst = false;
       this.timeToNextBurst = randomBetween(ROAM_BURST_INTERVAL);
       this.burstTimeLeft = 0;
+    }
+
+    setCursor(x, y) {
+      this.cursorX = x;
+      this.cursorY = y;
+      this.cursorIdle = 0;
     }
 
     setPaused(paused) {
@@ -208,6 +235,8 @@
         }
       }
 
+      this.updateChase(dt, screenWidth, screenHeight);
+
       if (this.state === 'jump') {
         const rawT = Math.min(1, this.stateElapsed / this.stateDuration);
         // Real cat jumps have a brief crouch/anticipation beat before the
@@ -228,7 +257,7 @@
           this.frameIndex = (this.frameIndex + 1) % frameCountForState(this.state);
         }
 
-        const speed = SPEED[this.state] || 0;
+        const speed = this.chasing && this.state === 'run' ? CHASE_SPEED : SPEED[this.state] || 0;
         if ((this.state === 'walk' || this.state === 'run') && speed > 0) {
           const maxX = Math.max(0, screenWidth - this.spriteWidth);
           this.walkTargetX = clamp(this.walkTargetX, 0, maxX);
@@ -267,6 +296,56 @@
       if (this.stateElapsed >= this.stateDuration) {
         this.transitionTo(pickNext(this.state), screenWidth, screenHeight);
       }
+    }
+
+    updateChase(dt, screenWidth, screenHeight) {
+      this.cursorIdle += dt;
+      this.chaseCooldown = Math.max(0, this.chaseCooldown - dt);
+
+      const dx = this.cursorX - (this.x + this.spriteWidth / 2);
+      const dy = this.cursorY - (this.y + this.spriteHeight / 2);
+      const dist = Math.hypot(dx, dy);
+      const radius = this.chasing ? CHASE_LEAVE_RADIUS : CHASE_ENTER_RADIUS;
+      const wanted = this.cursorIdle < CHASE_IDLE_MS && dist < radius && this.chaseCooldown === 0;
+
+      if (!wanted) {
+        if (this.chasing) {
+          this.chasing = false;
+          this.chaseTime = 0;
+          this.jumpGoalX = null; // drop the chase hop goal so normal jumps pick their own
+          this.jumpGoalY = null;
+          if (this.state === 'run') this.transitionTo('idle', screenWidth, screenHeight);
+        }
+        return;
+      }
+      this.chasing = true;
+      this.chaseTime += dt;
+      if (this.state === 'jump') return; // finish the hop in flight
+
+      const maxX = Math.max(0, screenWidth - this.spriteWidth);
+      const targetX = clamp(this.cursorX - this.spriteWidth / 2, 0, maxX);
+      const gapX = Math.abs(targetX - this.x);
+
+      if (this.chaseTime > CHASE_MIN_MS && gapX < CHASE_CATCH_X && Math.abs(dy) < this.spriteHeight) {
+        this.chaseCooldown = CHASE_COOLDOWN_MS;
+        this.chasing = false;
+        this.chaseTime = 0;
+        this.transitionTo('play', screenWidth, screenHeight);
+        return;
+      }
+
+      if (Math.abs(dy) > CHASE_HOP_DY) {
+        const maxY = Math.max(0, screenHeight - this.spriteHeight);
+        this.jumpGoalX = targetX;
+        this.jumpGoalY = clamp(this.cursorY - this.spriteHeight / 2, 0, maxY);
+        this.transitionTo('jump', screenWidth, screenHeight);
+        return;
+      }
+
+      if (this.state !== 'run') this.transitionTo('run', screenWidth, screenHeight);
+      this.walkTargetX = targetX;
+      this.stateElapsed = 0; // keep running as long as the chase lasts
+      this.stateDuration = 1000;
     }
 
     transitionTo(newState, screenWidth, screenHeight) {

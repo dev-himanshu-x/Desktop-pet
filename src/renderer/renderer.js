@@ -61,6 +61,11 @@
     render();
   });
 
+  // Mouse moves are forwarded even while the window is click-through.
+  window.addEventListener('mousemove', (event) => {
+    stateMachine.setCursor(event.clientX, event.clientY);
+  });
+
   window.PetClickThrough.setup({
     getPetRect: () => (visible && currentPet ? petEl.getBoundingClientRect() : null),
     petAPI: window.petAPI,
