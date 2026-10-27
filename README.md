@@ -21,8 +21,19 @@ curl -fsSL https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/ins
 irm https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/install.ps1 | iex
 ```
 
-## Update (Windows)
+## Update
 
+**macOS**
+```
+osascript -e 'quit app "Desktop Pet"'; sleep 1; curl -fsSL https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/install.sh | sh
+```
+
+**Linux**
+```
+pkill -f desktop-pet; curl -fsSL https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/install.sh | sh
+```
+
+**Windows** (PowerShell)
 ```powershell
 irm https://raw.githubusercontent.com/dev-himanshu-x/Desktop-pet/main/update.ps1 | iex
 ```
