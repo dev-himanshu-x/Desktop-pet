@@ -19,6 +19,16 @@ function createTray({ setPetType, setVisibility }) {
   tray = new Tray(trayIconPath());
   tray.setToolTip('Desktop Pet');
 
+  let menuRef = null;
+
+  // Windows/Linux only open the context menu on right-click; make a plain
+  // left-click open it too, like macOS does.
+  if (process.platform !== 'darwin') {
+    tray.on('click', () => {
+      if (menuRef) tray.popUpContextMenu(menuRef);
+    });
+  }
+
   function rebuild() {
     const currentPetId = store.get('currentPetId');
     const visible = store.get('visible');
@@ -79,6 +89,7 @@ function createTray({ setPetType, setVisibility }) {
     ]);
 
     tray.setContextMenu(menu);
+    menuRef = menu;
   }
 
   rebuild();
